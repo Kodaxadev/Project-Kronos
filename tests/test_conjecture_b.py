@@ -12,6 +12,13 @@ class ConjectureBTests(unittest.TestCase):
         self.assertEqual(witness.ell, 4)
         self.assertEqual((witness.t, witness.b, witness.c), (5, 5, 6))
 
+    def test_quotient_generator_that_is_not_primitive_is_rejected(self) -> None:
+        # Modulo 73, 7H generates F_73^*/H and (b,c)=(5,6) meets the
+        # coset equation, but 7 has multiplicative order 24 rather than 72.
+        # Conjecture B requires a generator of the full multiplicative group.
+        weaker_witness = Witness(73, 4, 18, 7, 5, 6)
+        self.assertFalse(verify_witness(weaker_witness))
+
     def test_material_corruption_is_rejected(self) -> None:
         witness = conjecture_b_witness(73)
         assert witness is not None
@@ -29,6 +36,7 @@ class ConjectureBTests(unittest.TestCase):
         report = scan_primes(500)
         self.assertEqual(report["applicable_prime_count"], len(report["records"]) + len(report["failures"]))
         self.assertEqual(report["failures"], [])
+        self.assertIn("primitive-root witnesses only", report["scope_note"])
 
 
 if __name__ == "__main__":

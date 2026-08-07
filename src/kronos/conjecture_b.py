@@ -28,6 +28,27 @@ def is_prime(n: int) -> bool:
     return True
 
 
+def distinct_prime_factors(n: int) -> tuple[int, ...]:
+    factors: list[int] = []
+    divisor = 2
+    while divisor * divisor <= n:
+        if n % divisor == 0:
+            factors.append(divisor)
+            while n % divisor == 0:
+                n //= divisor
+        divisor = 3 if divisor == 2 else divisor + 2
+    if n > 1:
+        factors.append(n)
+    return tuple(factors)
+
+
+def is_primitive_root(value: int, p: int) -> bool:
+    """Return whether value generates the full multiplicative group modulo p."""
+    if not is_prime(p) or p == 2 or not 1 <= value < p:
+        return False
+    return all(pow(value, (p - 1) // factor, p) != 1 for factor in distinct_prime_factors(p - 1))
+
+
 def subgroup_minus_one_two(p: int) -> frozenset[int]:
     """Return <-1, 2> inside the multiplicative group modulo p."""
     if not is_prime(p) or p == 2:
@@ -60,21 +81,21 @@ def quotient_order(value: int, subgroup: frozenset[int], p: int) -> int:
 
 
 def conjecture_b_witness(p: int) -> Witness | None:
-    """Find a witness for Conjecture B, or None when ell < 3 or none is found."""
+    """Find a primitive-root witness for Conjecture B, or None when not applicable/found."""
     subgroup = subgroup_minus_one_two(p)
     ell = (p - 1) // len(subgroup)
     if ell < 3:
         return None
 
-    for t in range(2, p):
-        if quotient_order(t, subgroup, p) != ell:
+    for primitive_root in range(2, p):
+        if not is_primitive_root(primitive_root, p):
             continue
-        first = sorted(coset(t, subgroup, p))
-        second = coset(t * t % p, subgroup, p)
+        first = sorted(coset(primitive_root, subgroup, p))
+        second = coset(primitive_root * primitive_root % p, subgroup, p)
         for b in first:
             c = (1 + b) % p
             if c != 0 and c in second:
-                witness = Witness(p, ell, len(subgroup), t, b, c)
+                witness = Witness(p, ell, len(subgroup), primitive_root, b, c)
                 if not verify_witness(witness):
                     raise AssertionError("internally generated witness failed verification")
                 return witness
@@ -89,7 +110,7 @@ def verify_witness(witness: Witness) -> bool:
     ell = (p - 1) // len(subgroup)
     if ell < 3 or witness.ell != ell or witness.subgroup_size != len(subgroup):
         return False
-    if not 1 <= witness.t < p or quotient_order(witness.t, subgroup, p) != ell:
+    if not is_primitive_root(witness.t, p):
         return False
     if witness.b not in coset(witness.t, subgroup, p):
         return False
@@ -124,5 +145,5 @@ def scan_primes(limit: int) -> dict[str, object]:
         "applicable_prime_count": applicable,
         "records": records,
         "failures": failures,
-        "scope_note": "Finite exact search only; an empty failures list is not a proof.",
+        "scope_note": "Finite exact search using primitive-root witnesses only; an empty failures list is not a proof.",
     }

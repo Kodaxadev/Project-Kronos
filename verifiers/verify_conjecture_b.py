@@ -20,6 +20,26 @@ def prime(n: int) -> bool:
     return True
 
 
+def distinct_prime_factors(n: int) -> list[int]:
+    factors: list[int] = []
+    divisor = 2
+    while divisor * divisor <= n:
+        if n % divisor == 0:
+            factors.append(divisor)
+            while n % divisor == 0:
+                n //= divisor
+        divisor = 3 if divisor == 2 else divisor + 2
+    if n > 1:
+        factors.append(n)
+    return factors
+
+
+def primitive_root(value: int, p: int) -> bool:
+    if not 1 <= value < p:
+        return False
+    return all(pow(value, (p - 1) // factor, p) != 1 for factor in distinct_prime_factors(p - 1))
+
+
 def subgroup(p: int) -> set[int]:
     values: set[int] = set()
     x = 1
@@ -28,15 +48,6 @@ def subgroup(p: int) -> set[int]:
         values.add((-x) % p)
         x = (2 * x) % p
     return values
-
-
-def qorder(t: int, h: set[int], p: int) -> int:
-    x = 1
-    for k in range(1, (p - 1) // len(h) + 1):
-        x = x * t % p
-        if x in h:
-            return k
-    return -1
 
 
 def verify_record(record: dict[str, int]) -> bool:
@@ -53,7 +64,7 @@ def verify_record(record: dict[str, int]) -> bool:
     t, b, c = record["t"], record["b"], record["c"]
     if not (1 <= t < p and 1 <= b < p and 1 <= c < p):
         return False
-    if qorder(t, h, p) != ell:
+    if not primitive_root(t, p):
         return False
     if b not in {t * x % p for x in h}:
         return False
@@ -93,7 +104,7 @@ def verify_report(report: dict[str, object]) -> tuple[bool, str]:
     represented: set[int] = set()
     for record in records:
         if not isinstance(record, dict) or not verify_record(record):
-            return False, "invalid witness record"
+            return False, "invalid primitive-root witness record"
         p = record["p"]
         if p in represented:
             return False, "duplicate prime"
