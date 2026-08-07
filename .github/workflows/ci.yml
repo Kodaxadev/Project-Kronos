@@ -1,0 +1,43 @@
+name: Research checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: src
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: Install pinned Cruthunas policy kernel
+        run: python -m pip install --requirement requirements/policy.txt
+      - name: Validate governed structure
+        run: cruthunas check --all --json
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Generate deterministic baseline twice
+        run: |
+          python scripts/scan_conjecture_b.py --limit 5000 --output artifacts/baseline-a.json
+          python scripts/scan_conjecture_b.py --limit 5000 --output artifacts/baseline-b.json
+          python -c "from pathlib import Path; a=Path('artifacts/baseline-a.json').read_bytes(); b=Path('artifacts/baseline-b.json').read_bytes(); assert a == b"
+      - name: Run separate verifier
+        run: python verifiers/verify_conjecture_b.py artifacts/baseline-a.json
+      - name: Run material negative control
+        run: python scripts/negative_control.py artifacts/baseline-a.json
