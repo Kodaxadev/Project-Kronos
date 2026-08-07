@@ -1,0 +1,93 @@
+{
+  "claim_target": "Conjecture B for every odd prime p with [F_p^*: <-1,2>] = 3003",
+  "ell": 3003,
+  "ell_factorization": [
+    3,
+    7,
+    11,
+    13
+  ],
+  "indexed_prime_count": 5,
+  "indexed_primes": [
+    {
+      "b": 703170079,
+      "c": 703170080,
+      "ell": 3003,
+      "order_of_2": 463670,
+      "p": 1392401011,
+      "primitive_root": 3,
+      "quotient_generator": 3,
+      "subgroup_exponent": 909,
+      "subgroup_size": 463670
+    },
+    {
+      "b": 753454416,
+      "c": 753454417,
+      "ell": 3003,
+      "order_of_2": 552292,
+      "p": 1658532877,
+      "primitive_root": 5,
+      "quotient_generator": 5,
+      "subgroup_exponent": 5275,
+      "subgroup_size": 552292
+    },
+    {
+      "b": 985811030,
+      "c": 985811031,
+      "ell": 3003,
+      "order_of_2": 560486,
+      "p": 1683139459,
+      "primitive_root": 7,
+      "quotient_generator": 7,
+      "subgroup_exponent": 1419,
+      "subgroup_size": 560486
+    },
+    {
+      "b": 1505001064,
+      "c": 1505001065,
+      "ell": 3003,
+      "order_of_2": 333625,
+      "p": 2003751751,
+      "primitive_root": 30,
+      "quotient_generator": 30,
+      "subgroup_exponent": 1410,
+      "subgroup_size": 667250
+    },
+    {
+      "b": 1843794948,
+      "c": 1843794949,
+      "ell": 3003,
+      "order_of_2": 726492,
+      "p": 2181655477,
+      "primitive_root": 14,
+      "quotient_generator": 14,
+      "subgroup_exponent": 1740,
+      "subgroup_size": 726492
+    }
+  ],
+  "literature_computation_limit_inclusive": 1073741824,
+  "prime_candidate_count": 40246,
+  "progression": {
+    "first_k": 178779,
+    "form": "p = 1 + 2*ell*k",
+    "last_k": 383648
+  },
+  "progression_candidate_count": 204870,
+  "schema_version": 1,
+  "scope": {
+    "does_not_establish": [
+      "Correctness of the cited literature results below and above the finite interval.",
+      "Novelty, independent reproduction, external review, or a universal theorem by computation alone.",
+      "Any result for indices other than ell=3003."
+    ],
+    "establishes": [
+      "An exact finite enumeration of the published gap for ell=3003 under the implemented arithmetic tests.",
+      "A Conjecture B witness for every indexed prime found in that finite interval."
+    ]
+  },
+  "searched_prime_interval": {
+    "lower_exclusive": 1073741824,
+    "upper_exclusive": 2304192002
+  },
+  "theorem_bound_inclusive": 2304192002
+}

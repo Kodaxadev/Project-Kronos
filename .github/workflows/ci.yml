@@ -1,0 +1,68 @@
+name: Research checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: src
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: Install pinned Cruthunas policy kernel
+        run: python -m pip install --requirement requirements/policy.txt
+      - name: Validate governed structure
+        run: cruthunas check --all --json
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Generate deterministic small baseline twice
+        run: |
+          python scripts/scan_conjecture_b.py --limit 5000 --output artifacts/baseline-a.json
+          python scripts/scan_conjecture_b.py --limit 5000 --output artifacts/baseline-b.json
+          python -c "from pathlib import Path; assert Path('artifacts/baseline-a.json').read_bytes() == Path('artifacts/baseline-b.json').read_bytes()"
+      - name: Verify small baseline
+        run: python verifiers/verify_conjecture_b.py artifacts/baseline-a.json
+      - name: Run small-baseline negative control
+        run: python scripts/negative_control.py artifacts/baseline-a.json
+      - name: Reproduce first uncovered index selection
+        run: python scripts/find_first_uncovered_index.py
+      - name: Regenerate index-3003 artifact twice
+        run: |
+          python scripts/close_index_3003.py --output artifacts/index-3003-a.json
+          python scripts/close_index_3003.py --output artifacts/index-3003-b.json
+          python -c "from pathlib import Path; a=Path('artifacts/index-3003-a.json').read_bytes(); b=Path('artifacts/index-3003-b.json').read_bytes(); committed=Path('artifacts/index-3003.json').read_bytes(); assert a == b == committed"
+      - name: Verify index-3003 artifact
+        run: python verifiers/verify_index_3003.py artifacts/index-3003-a.json
+      - name: Run index-3003 material negative control
+        run: python scripts/negative_control_index_3003.py artifacts/index-3003-a.json
+      - name: Compile C++20 cross-check
+        if: runner.os == 'Linux'
+        run: g++ -O2 -std=c++20 -Wall -Wextra -pedantic verifiers/verify_index_3003.cpp -o verify-index-3003
+      - name: Run C++20 cross-check
+        if: runner.os == 'Linux'
+        run: ./verify-index-3003 > artifacts/index-3003-cpp-generated.txt
+      - name: Compare Python and C++ reports
+        if: runner.os == 'Linux'
+        run: |
+          python verifiers/compare_index_3003.py artifacts/index-3003-a.json artifacts/index-3003-cpp-generated.txt
+          cmp artifacts/index-3003-cpp-generated.txt artifacts/index-3003-cpp.txt
+      - name: Verify committed artifact hashes
+        if: runner.os == 'Linux'
+        run: sha256sum --check artifacts/index-3003-SHA256.txt
