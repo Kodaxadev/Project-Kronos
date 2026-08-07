@@ -2,40 +2,59 @@
 
 **Date:** 2026-08-06  
 **Lifecycle:** Gate 0 candidate intake / Gate 1 charter preparation  
-**Epistemic posture:** no project claims registered
+**Epistemic posture:** no project claims registered; one bounded claim proposal
 
-## Completed initialization
+## Completed
 
-- active research branch created;
-- Cruthúnas experimental manifest pinned to an exact framework commit;
-- empty canonical claim ledger and schemas installed;
-- problem, evidence, attribution, AI-use, and branch boundaries recorded;
-- baseline CAC definitions implemented;
-- finite Conjecture B witness scanner implemented;
-- separate report verifier implemented without importing the scanner package;
-- material witness-corruption negative control implemented;
-- tests and pinned cross-platform CI prepared.
+- active research branch and experimental Cruthúnas structure initialized;
+- canonical Conjecture B statement reconciled across the 2023 and 2024 papers;
+- initial bibliography corrected, including the authorship of the 2014 Ma–Zhao–Shen paper;
+- published example `p=73` reproduced with witness `(g,b,c)=(5,5,6)`;
+- bounded public AI-activity search recorded;
+- first uncovered index candidate isolated as `ell=3003`;
+- exact Python enumeration of the finite literature-conditioned interval completed;
+- separate Python verifier completed without importing the scanner;
+- separate C++20 implementation completed;
+- Python and C++ reports agree exactly;
+- material witness corruption is rejected;
+- proposal `K001` created without registering it in the canonical claim ledger.
 
-## Not completed
+## Finite `ell=3003` result
 
-- full primary-source reconciliation;
-- novelty and public AI-activity audit;
-- reproduction of the published `p <= 2^30` scan;
-- proof or formalization of any new claim;
-- genuinely independent implementation or human mathematical review;
-- Cruthúnas conformance or framework release;
-- commercial deployment analysis.
+The searched interval is
 
-## Baseline local validation
+```text
+1073741824 < p < 2304192002.
+```
 
-The initialization code was locally tested on 2026-08-06 with:
+The progression `p=1+6006*k` contains:
 
-- 8 unit tests passing;
-- deterministic scan through `p <= 5000`;
-- 220 applicable primes in that bound;
-- zero finite failures;
-- standalone verifier acceptance;
-- material-corruption rejection;
-- report SHA-256 `e2d4a4bea053cef58b8ca70d04be1629f16c02f68d01f89e17c922aa4412cdd4`.
+- 204,870 candidate values;
+- 40,246 primes;
+- 5 primes with `[F_p^*:<-1,2>] = 3003`;
+- a verified Conjecture B witness for each of those five primes.
 
-This is an initialization check only. The generated report is not committed evidence and the result is not a theorem.
+Committed Python report SHA-256:
+
+```text
+118956881678bcdf3b175535a4f92c31eda4d50e7c58c08b489bc99864efee0b
+```
+
+## What this does not establish
+
+- correctness or applicability of the cited published computation through `2^30`;
+- correctness or applicability of the cited theorem at and above `2304192002`;
+- novelty of the `ell=3003` synthesis;
+- independent reproduction by another person or separately directed team;
+- external mathematical review;
+- Conjecture B for another index;
+- the general odd-length CAC problem;
+- Cruthúnas conformance or commercial deployment value.
+
+## Immediate blockers before registration
+
+1. fresh hostile review of the finite arithmetic and boundary conditions;
+2. independent review of the literature synthesis;
+3. citation search specifically for index `3003` and equivalent formulations;
+4. decision whether to register `K001` as a computational result;
+5. freeze or revise the charter based on that review.

@@ -4,12 +4,13 @@ from kronos.conjecture_b import Witness, conjecture_b_witness, scan_primes, veri
 
 
 class ConjectureBTests(unittest.TestCase):
-    def test_p73_has_verified_witness(self) -> None:
+    def test_p73_reproduces_published_witness(self) -> None:
         witness = conjecture_b_witness(73)
         self.assertIsNotNone(witness)
         assert witness is not None
         self.assertTrue(verify_witness(witness))
         self.assertEqual(witness.ell, 4)
+        self.assertEqual((witness.t, witness.b, witness.c), (5, 5, 6))
 
     def test_material_corruption_is_rejected(self) -> None:
         witness = conjecture_b_witness(73)
